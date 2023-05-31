@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "486450919235",
+    "project_id": "janice-mynotes-flutter-project",
+    "storage_bucket": "janice-mynotes-flutter-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:486450919235:android:ec0d4de7574b33835721f6",
+        "android_client_info": {
+          "package_name": "in.co.janice.mynotes"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "486450919235-eiju26hlum4nhcmvblgtjfr52nkghi0q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3lyCOXA9lpYIZD0vMLwYgkPVsZP7G5Dw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "486450919235-eiju26hlum4nhcmvblgtjfr52nkghi0q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
