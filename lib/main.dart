@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/views/login_view.dart';
+import 'package:mynotes/views/register_view.dart';
 
 import 'firebase_options.dart';
 
@@ -23,18 +24,20 @@ void main() {
   // ), );
 }
 
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-          title: 'Flutter Demo',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-            useMaterial3: true,
-          ),
-          home: const HomePage(),
-        );
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+        useMaterial3: true,
+        appBarTheme: AppBarTheme(
+          color: Colors.teal[200],
+        )
+      ),
+      home: const HomePage(),
+    );
   }
 }
 
@@ -48,37 +51,60 @@ class HomePage extends StatelessWidget {
         title: const Text('Home'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
-
       body: FutureBuilder(
         future: Firebase.initializeApp(
           options: DefaultFirebaseOptions.currentPlatform,
         ),
         builder: (context, snapshot) {
-          switch(snapshot.connectionState) {
+          switch (snapshot.connectionState) {
             case ConnectionState.done:
               final user = FirebaseAuth.instance.currentUser;
-              if(user?.emailVerified ?? false) {
-                print("You are a verified user,");
+              if (user?.emailVerified ?? false) {
+                // print("You are a verified user,");
+                print(user);
               } else {
-                print("You need to verify your user first.");
+                // print("You need to verify your user first.");
+                // Future.delayed(Duration.zero, () {
+                //   Navigator.of(context).push(MaterialPageRoute(
+                //       builder: (context) => const VerifyEmailView()));
+                // });
+                return const LoginView();
+
               }
-              return Text('Done');
+              return const Text('Done');
             default:
               return const Text("loading");
-          };
-
+          }
+          ;
         },
       ),
     );
   }
 }
 
+class VerifyEmailView extends StatefulWidget {
+  const VerifyEmailView({Key? key}) : super(key: key);
 
+  @override
+  State<VerifyEmailView> createState() => _VerifyEmailViewState();
+}
 
-
-
-
-
+class _VerifyEmailViewState extends State<VerifyEmailView> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      const Text('Please enter your email address:'),
+      TextButton(
+          onPressed: () async{
+            final user = FirebaseAuth.instance.currentUser;
+            user?.sendEmailVerification();
+          },
+          child: const Text('Send email verification')
+      )
+    ],
+    );
+  }
+}
 
 // Default Home Page
 // class MyHomePage extends StatefulWidget {
