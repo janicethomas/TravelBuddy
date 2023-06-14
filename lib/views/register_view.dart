@@ -65,9 +65,15 @@ class _RegisterViewState extends State<RegisterView> {
               final email = _email.text;
               final password = _password.text;
               try {
-                final userCredential =
-                await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
-                devtools.log(userCredential.toString());
+                // final userCredential =
+                await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                    email: email,
+                    password: password
+                );
+                final user = FirebaseAuth.instance.currentUser;
+                user?.sendEmailVerification();
+                Navigator.of(context).pushNamed(verifyEmailRoute);
+                // devtools.log(userCredential.toString());
               } on FirebaseAuthException catch(e) {
                 if(e.code == 'weak-password') {
                   await showErrorDialog(context, 'Weak password');
@@ -81,6 +87,11 @@ class _RegisterViewState extends State<RegisterView> {
                   await showErrorDialog(context, 'Invalid email');
                   devtools.log('Invalid email');
                 }
+                else {
+                  await showErrorDialog(context, 'Error: ${e.code}');
+                }
+              } catch (e) {
+                await showErrorDialog(context, e.toString());
               }
 
             },
