@@ -70,17 +70,6 @@ class HomePage extends StatelessWidget {
                 return const VerifyEmailView();
               }
             }
-            // if (user?.emailVerified ?? false) {
-            //   // print("You are a verified user,");
-            //   // print(user);
-            //   return const LoginView();
-            // } else {
-            //   print("You need to verify your user first.");
-            //   // Future.delayed(Duration.zero, () {
-            //   //   Navigator.of(context).push(MaterialPageRoute(
-            //   //       builder: (context) => const VerifyEmailView()));
-            //   // });
-            //   return const VerifyEmailView();
           return LoginView();
           default:
             return const CircularProgressIndicator();
