@@ -22,7 +22,7 @@ class appDrawer extends StatelessWidget {
 
                 ListTile(
                     leading:Icon(Icons.person),
-                    title:Text("My Profile"),
+                    title:Text("My Plans"),
                     onTap:(){
                       // My Pfofile button action
                     }

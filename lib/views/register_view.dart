@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 // import '../firebase_options.dart';
 import 'dart:developer' as devtools show log;
@@ -7,6 +8,8 @@ import 'dart:developer' as devtools show log;
 import 'package:mynotes/routes.dart';
 
 import '../show_error_dialog.dart';
+
+final CollectionReference _users = FirebaseFirestore.instance.collection('users');
 
 class RegisterView extends StatefulWidget {
   const RegisterView({Key? key}) : super(key: key);
@@ -19,6 +22,8 @@ class _RegisterViewState extends State<RegisterView> {
 
   late final TextEditingController _email = TextEditingController();
   late final TextEditingController _password = TextEditingController();
+  late final TextEditingController _name = TextEditingController();
+  late final TextEditingController _mobile = TextEditingController();
 
   @override
   void initState() {
@@ -31,6 +36,8 @@ class _RegisterViewState extends State<RegisterView> {
   void dispose() {
     _email.dispose();
     _password.dispose();
+    _name.dispose();
+    _mobile.dispose();
     super.dispose();
   }
 
@@ -60,6 +67,24 @@ class _RegisterViewState extends State<RegisterView> {
               hintText: 'Enter your password here',
             ),
           ),
+          TextField(
+            controller: _name,
+            enableSuggestions: false,
+            autocorrect: false,
+            keyboardType: TextInputType.name,
+            decoration: const InputDecoration(
+              hintText: 'Enter your name here',
+            ),
+          ),
+          TextField(
+            controller: _mobile,
+            enableSuggestions: false,
+            autocorrect: false,
+            keyboardType: TextInputType.phone,
+            decoration: const InputDecoration(
+              hintText: 'Enter your mobile no. here',
+            ),
+          ),
           TextButton(
             onPressed: () async {
               final email = _email.text;
@@ -70,6 +95,19 @@ class _RegisterViewState extends State<RegisterView> {
                     email: email,
                     password: password
                 );
+
+                final data = {
+                  "user_email" : email,
+                  "user_name" : _name.text,
+                  "user_mobile" : _mobile.text
+                };
+
+                QuerySnapshot docRef = await _users.where("user_email", isEqualTo: email).get();
+                if (docRef.docs.isEmpty) {
+                  await _users.add(data);
+                }
+
+
                 final user = FirebaseAuth.instance.currentUser;
                 user?.sendEmailVerification();
                 Navigator.of(context).pushNamed(verifyEmailRoute);
