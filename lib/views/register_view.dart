@@ -9,7 +9,7 @@ import 'package:mynotes/routes.dart';
 
 import '../show_error_dialog.dart';
 
-final CollectionReference _users = FirebaseFirestore.instance.collection('users');
+
 
 class RegisterView extends StatefulWidget {
   const RegisterView({Key? key}) : super(key: key);
@@ -24,6 +24,7 @@ class _RegisterViewState extends State<RegisterView> {
   late final TextEditingController _password = TextEditingController();
   late final TextEditingController _name = TextEditingController();
   late final TextEditingController _mobile = TextEditingController();
+  late final CollectionReference _users = FirebaseFirestore.instance.collection('users');
 
   @override
   void initState() {
