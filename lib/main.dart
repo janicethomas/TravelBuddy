@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:mynotes/views/login_view.dart';
 import 'package:mynotes/views/register_view.dart';
 import 'package:mynotes/views/verify_email_view.dart';
 import 'package:mynotes/views/view_plans.dart';
+import 'package:mynotes/globals.dart' as globals;
 import 'dart:developer' as devtools show log;
 
 import 'firebase_options.dart';
@@ -38,8 +40,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           appBarTheme: AppBarTheme(
             color: Colors.orange[200],
-          )
-      ),
+          )),
       home: const HomePage(),
       routes: {
         loginRoute: (context) => const LoginView(),
@@ -67,12 +68,24 @@ class HomePage extends StatelessWidget {
             final user = FirebaseAuth.instance.currentUser;
             if (user != null) {
               if (user.emailVerified) {
+                globals.userEmail = user.email!;
+
+                final colRef = FirebaseFirestore.instance.collection('users');
+                colRef
+                    .where('user_email', isEqualTo: globals.userEmail)
+                    .limit(1)
+                    .get()
+                    .then((value) {
+                  globals.userName = value.docs.single['user_name'];
+                  globals.userMobile = value.docs.single['user_mobile'];
+                });
+
                 return const ViewPlans();
               } else {
                 return const VerifyEmailView();
               }
             }
-          return LoginView();
+            return LoginView();
           default:
             return const CircularProgressIndicator();
         }
@@ -152,7 +165,6 @@ class HomePage extends StatelessWidget {
 //       },
 //   ).then((value) =>value ?? false);
 // }
-
 
 // Default Home Page
 // class MyHomePage extends StatefulWidget {

@@ -83,6 +83,7 @@ class _ViewPlansState extends State<ViewPlans> {
                     final isFlexible = docSnapshot['plan_flexible'].toString();
                     final pax = docSnapshot['plan_pax'];
                     final ownerId = docSnapshot['plan_created_by']['user_name'];
+                    final paxLeft = pax - docSnapshot['plan_buddies'].length;
 
                     // late final creator = getCreatorName(ownerId);
 
@@ -105,10 +106,10 @@ class _ViewPlansState extends State<ViewPlans> {
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("Me ${globals.userName}"),
                                   Text("Plan created by: $ownerId"),
                                   Text("Mode of transport: $planMode"),
-                                  Text("Total persons: $pax"),
+                                  Text("Total persons expected: $pax"),
+                                  Text("Total persons left: $paxLeft"),
                                   Text("Is the plan flexible: $isFlexible"),
                                   TextButton(
                                       onPressed: () =>
