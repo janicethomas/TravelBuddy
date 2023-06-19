@@ -19,7 +19,7 @@ class ViewPlans extends StatefulWidget {
 class _ViewPlansState extends State<ViewPlans> {
   late final CollectionReference _refPlans =
       FirebaseFirestore.instance.collection('plans');
-  late final CollectionReference _refUsers =
+  final CollectionReference _refUsers =
       FirebaseFirestore.instance.collection('users');
 
   late final Stream<QuerySnapshot> _streamPlans;
@@ -39,9 +39,38 @@ class _ViewPlansState extends State<ViewPlans> {
     super.dispose();
   }
 
+  Future<String> getCreatorName (String ownerId) async{
+    DocumentSnapshot docSnapshot = await _refUsers.doc(ownerId).get();
+    devtools.log(ownerId + (docSnapshot.data() as Map<String, dynamic>)['user_name']);
+    if (docSnapshot.exists) {
+      final data = docSnapshot.data() as Map<String, dynamic>;
+      return data['user_name'];
+    }
+    else {
+      return "abc";
+    }
+  }
+
+  Widget ownerWidget(String ownerId) {
+    return FutureBuilder(
+        future: getCreatorName(ownerId),
+        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none: return new Text('Press button to start');
+            case ConnectionState.waiting: return new Text('Awaiting result...');
+            default:
+              if (snapshot.hasError)
+                return new Text('Owner not found');
+              else
+                return new Text('Plan created by: ${snapshot.data}');
+          }
+        }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold (
         appBar: AppBar(
           title: const Text('View Plans'),
           actions: const [popupMenu()],
@@ -55,7 +84,7 @@ class _ViewPlansState extends State<ViewPlans> {
             }
             if (snapshot.connectionState == ConnectionState.active) {
               QuerySnapshot querySnapshot = snapshot.data;
-              return ListView.builder(
+              return ListView.builder (
                   itemCount: querySnapshot!.docs.length,
                   itemBuilder: (context, index) {
                     final DocumentSnapshot docSnapshot =
@@ -67,8 +96,12 @@ class _ViewPlansState extends State<ViewPlans> {
                     final planMode = docSnapshot['plan_mode'];
                     final isFlexible = docSnapshot['plan_flexible'].toString();
                     final pax = docSnapshot['plan_pax'];
+                    final ownerId = docSnapshot['plan_created_by'];
+
+                    // late final creator = getCreatorName(ownerId);
 
                     return Card(
+
                         margin: const EdgeInsets.all(10),
                         child: ExpansionTile(
                           title: Text(docSnapshot['plan_starting_point'] +
@@ -86,14 +119,16 @@ class _ViewPlansState extends State<ViewPlans> {
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  ownerWidget(ownerId),
                                   Text("Mode of transport: $planMode"),
                                   Text("Total persons: $pax"),
-                                  Text("Is th plan flexible: $isFlexible"),
+                                  Text("Is the plan flexible: $isFlexible"),
                                 ],
                               ),
                             )
                           ],
-                        ));
+                        )
+                    );
                   });
             }
 
@@ -102,3 +137,15 @@ class _ViewPlansState extends State<ViewPlans> {
         ));
   }
 }
+
+// StreamBuilder (
+// stream: _streamUsers,
+// builder: (userContext, userSnapshot) {
+// if (userSnapshot.connectionState == ConnectionState.active) {
+// QuerySnapshot? userQuerySnapshot = userSnapshot.data;
+// final DocumentSnapshot userDocSnapshot =
+// userQuerySnapshot!.docs[owner];
+// final creater = userDocSnapshot['user_name'];
+// }
+// },
+// );
