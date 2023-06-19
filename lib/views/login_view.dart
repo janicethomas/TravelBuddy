@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 // import '../firebase_options.dart';
+import 'package:mynotes/globals.dart' as globals;
 import 'dart:developer' as devtools show log;
-
+import 'package:mynotes/globals.dart';
 import 'package:mynotes/routes.dart';
 
 import '../show_error_dialog.dart';
@@ -18,6 +20,7 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   late final TextEditingController _email = TextEditingController();
   late final TextEditingController _password = TextEditingController();
+  final CollectionReference _users = FirebaseFirestore.instance.collection('users');
 
   @override
   void initState() {
@@ -70,6 +73,12 @@ class _LoginViewState extends State<LoginView> {
                         email: email, password: password);
                     final user = FirebaseAuth.instance.currentUser;
                     if (user?.emailVerified ?? false) {
+                      final colRef = FirebaseFirestore.instance.collection('users');
+                      final snapshot = await colRef.where('user_email', isEqualTo: email).limit(1).get();
+                      globals.userName = snapshot.docs.single['user_name'];
+                      globals.userMobile = snapshot.docs.single['user_mobile'];
+                      globals.userEmail = snapshot.docs.single['user_email'];
+
                       Navigator.of(context).pushNamedAndRemoveUntil(
                         // notesRoute,
                         viewPlansRoute,

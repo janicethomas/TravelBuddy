@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mynotes/popup_menu.dart';
 import 'package:mynotes/app_drawer.dart';
+import 'package:mynotes/globals.dart' as globals;
 import 'dart:developer' as devtools show log;
 
 import 'package:mynotes/main.dart';
@@ -39,34 +40,34 @@ class _ViewPlansState extends State<ViewPlans> {
     super.dispose();
   }
 
-  Future<String> getCreatorName (String ownerId) async{
-    DocumentSnapshot docSnapshot = await _refUsers.doc(ownerId).get();
-    devtools.log(ownerId + (docSnapshot.data() as Map<String, dynamic>)['user_name']);
-    if (docSnapshot.exists) {
-      final data = docSnapshot.data() as Map<String, dynamic>;
-      return data['user_name'];
-    }
-    else {
-      return "abc";
-    }
-  }
-
-  Widget ownerWidget(String ownerId) {
-    return FutureBuilder(
-        future: getCreatorName(ownerId),
-        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none: return new Text('Press button to start');
-            case ConnectionState.waiting: return new Text('Awaiting result...');
-            default:
-              if (snapshot.hasError)
-                return new Text('Owner not found');
-              else
-                return new Text('Plan created by: ${snapshot.data}');
-          }
-        }
-    );
-  }
+  // Future<String> getCreatorName (String ownerId) async{
+  //   DocumentSnapshot docSnapshot = await _refUsers.doc(ownerId).get();
+  //   devtools.log(ownerId + (docSnapshot.data() as Map<String, dynamic>)['user_name']);
+  //   if (docSnapshot.exists) {
+  //     final data = docSnapshot.data() as Map<String, dynamic>;
+  //     return data['user_name'];
+  //   }
+  //   else {
+  //     return "abc";
+  //   }
+  // }
+  //
+  // Widget ownerWidget(String ownerId) {
+  //   return FutureBuilder(
+  //       future: getCreatorName(ownerId),
+  //       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+  //         switch (snapshot.connectionState) {
+  //           case ConnectionState.none: return new Text('Press button to start');
+  //           case ConnectionState.waiting: return new Text('Awaiting result...');
+  //           default:
+  //             if (snapshot.hasError)
+  //               return new Text('Owner not found');
+  //             else
+  //               return new Text('Plan created by: ${snapshot.data}');
+  //         }
+  //       }
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +120,7 @@ class _ViewPlansState extends State<ViewPlans> {
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  ownerWidget(ownerId),
+                                  Text("${globals.userName}"),
                                   Text("Mode of transport: $planMode"),
                                   Text("Total persons: $pax"),
                                   Text("Is the plan flexible: $isFlexible"),

@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 // import '../firebase_options.dart';
+import 'package:mynotes/globals.dart' as globals;
 import 'dart:developer' as devtools show log;
 
 import 'package:mynotes/routes.dart';
@@ -106,6 +107,9 @@ class _RegisterViewState extends State<RegisterView> {
                 QuerySnapshot docRef = await _users.where("user_email", isEqualTo: email).get();
                 if (docRef.docs.isEmpty) {
                   await _users.add(data);
+                }
+                else {
+                  devtools.log(_users.id);
                 }
 
 
