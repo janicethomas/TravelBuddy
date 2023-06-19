@@ -19,9 +19,9 @@ class ViewPlans extends StatefulWidget {
 
 class _ViewPlansState extends State<ViewPlans> {
   late final CollectionReference _refPlans =
-      FirebaseFirestore.instance.collection('plans');
+  FirebaseFirestore.instance.collection('plans');
   final CollectionReference _refUsers =
-      FirebaseFirestore.instance.collection('users');
+  FirebaseFirestore.instance.collection('users');
 
   late final Stream<QuerySnapshot> _streamPlans;
   late final Stream<QuerySnapshot> _streamUsers;
@@ -40,34 +40,19 @@ class _ViewPlansState extends State<ViewPlans> {
     super.dispose();
   }
 
-  // Future<String> getCreatorName (String ownerId) async{
-  //   DocumentSnapshot docSnapshot = await _refUsers.doc(ownerId).get();
-  //   devtools.log(ownerId + (docSnapshot.data() as Map<String, dynamic>)['user_name']);
-  //   if (docSnapshot.exists) {
-  //     final data = docSnapshot.data() as Map<String, dynamic>;
-  //     return data['user_name'];
-  //   }
-  //   else {
-  //     return "abc";
-  //   }
-  // }
-  //
-  // Widget ownerWidget(String ownerId) {
-  //   return FutureBuilder(
-  //       future: getCreatorName(ownerId),
-  //       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-  //         switch (snapshot.connectionState) {
-  //           case ConnectionState.none: return new Text('Press button to start');
-  //           case ConnectionState.waiting: return new Text('Awaiting result...');
-  //           default:
-  //             if (snapshot.hasError)
-  //               return new Text('Owner not found');
-  //             else
-  //               return new Text('Plan created by: ${snapshot.data}');
-  //         }
-  //       }
-  //   );
-  // }
+  Future<void> _update([DocumentSnapshot? documentSnapshot]) async {
+    if (documentSnapshot != null) {
+      final buddy_data = [{
+          'user_name' : globals.userName,
+          'user_email' : globals.userEmail,
+        'user_mobile': globals.userMobile,
+      }];
+      await _refPlans
+          .doc(documentSnapshot!.id)
+          .update({"plan_buddies": FieldValue.arrayUnion(buddy_data)});
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +82,7 @@ class _ViewPlansState extends State<ViewPlans> {
                     final planMode = docSnapshot['plan_mode'];
                     final isFlexible = docSnapshot['plan_flexible'].toString();
                     final pax = docSnapshot['plan_pax'];
-                    final ownerId = docSnapshot['plan_created_by'];
+                    final ownerId = docSnapshot['plan_created_by']['user_name'];
 
                     // late final creator = getCreatorName(ownerId);
 
@@ -120,10 +105,16 @@ class _ViewPlansState extends State<ViewPlans> {
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("${globals.userName}"),
+                                  Text("Me ${globals.userName}"),
+                                  Text("Plan created by: $ownerId"),
                                   Text("Mode of transport: $planMode"),
                                   Text("Total persons: $pax"),
                                   Text("Is the plan flexible: $isFlexible"),
+                                  TextButton(
+                                      onPressed: () =>
+                                          _update(docSnapshot),
+                                      child: Text("Join plan"),
+                                  ),
                                 ],
                               ),
                             )
@@ -138,15 +129,3 @@ class _ViewPlansState extends State<ViewPlans> {
         ));
   }
 }
-
-// StreamBuilder (
-// stream: _streamUsers,
-// builder: (userContext, userSnapshot) {
-// if (userSnapshot.connectionState == ConnectionState.active) {
-// QuerySnapshot? userQuerySnapshot = userSnapshot.data;
-// final DocumentSnapshot userDocSnapshot =
-// userQuerySnapshot!.docs[owner];
-// final creater = userDocSnapshot['user_name'];
-// }
-// },
-// );
